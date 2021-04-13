@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+import React, {useState,useEffect} from 'react';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
@@ -6,34 +6,24 @@ import ErrorBoundry from '../components/ErrorBoundry';
 import './App.css';
 
 
-class App extends Component {
-constructor(){
-    super()
-    this.state ={
-        robots:[],
-        searchfield:''
-    }
-}
+function App() {
+const [robots, setRobots] = useState([]);
+const [searchfield, setSearchfield] = useState('');
 
 
-componentDidMount() {
+useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/users')
       .then(response=> response.json())
-      .then(users => {this.setState({ robots: users})});
-  }
+      .then(users => {setRobots(users)});
+    },[]) // if you add count, only run if count changes.
 
-
-onSearchChange=(event)=>{
-    this.setState({searchfield:event.target.value}) //react rule if you want to set sate
-
+const OnSearchChange =(event)=>{
+    setSearchfield(event.target.value)
 }
-
-render(){
-
-   let {robots,searchfield} =this.state;
-    const filterRobots = robots.filter(robot=>{
-        return robot.name.toLocaleLowerCase().includes(searchfield.toLocaleLowerCase())
-    });
+    
+const filterRobots = robots.filter(robot=>{
+     return robot.name.toLocaleLowerCase().includes(searchfield.toLocaleLowerCase())
+ });
 
     if(robots.length===0){
         return <h1 className='tc'>LOAGING</h1>
@@ -41,16 +31,14 @@ render(){
         return(
             <div className='tc'>
                 <h1 className='f1'>RoboFriends</h1>
-                <SearchBox searchChange={this.onSearchChange}/>
+                <SearchBox searchChange={OnSearchChange}/>
                 <Scroll>
                 <ErrorBoundry>
-                <CardList robots={filterRobots}/>
+               <CardList robots={filterRobots}/>
                 </ErrorBoundry>
             </Scroll>
         </div>
         );
     }
-
-}
 }
 export default App;
